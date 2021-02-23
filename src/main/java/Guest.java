@@ -2,8 +2,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Guest {
 
-    private AtomicInteger dishQuantity = new AtomicInteger(0);
-
     Restaurant restaurant;
 
     public Guest(Restaurant restaurant) {
@@ -19,23 +17,21 @@ public class Guest {
             Thread.sleep(2000);
 
 
-
-            if (dishQuantity.get() > restaurant.dishesMax) {
+            if (Restaurant.dishesNumber.get() == Restaurant.dishesMax) {
                 Thread.currentThread().interrupt();
             }
 
             Order order = new Order(guestName);
 
 
-            synchronized (restaurant.waitingList) {
+            synchronized (Restaurant.waitingList) {
                 System.out.printf("%s готов сделать заказ\n", guestName);
-                restaurant.waitingList.add(order);
-                restaurant.waitingList.notify();
+                Restaurant.waitingList.add(order);
+                Restaurant.waitingList.notify();
             }
 
             synchronized (order) {
                 if (!order.readyToOrder()) {
-
                     order.wait();
                 }
 
@@ -49,7 +45,6 @@ public class Guest {
 
                 System.out.printf("%s начал ужинать\n", guestName);
                 Thread.sleep(5000);
-                dishQuantity.getAndIncrement();
                 System.out.printf("%s съел всё своё %s, оставил на чай %s, поблагодарил %s и пошёл домой\n", guestName, order.getDishName(), order.getWaiterName(), order.getCookName());
 
                 order.notify();

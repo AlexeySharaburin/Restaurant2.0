@@ -2,8 +2,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Cook {
 
-    private AtomicInteger dishQuantity = new AtomicInteger(0);
-
     Restaurant restaurant;
 
     public Cook(Restaurant restaurant) {
@@ -16,29 +14,30 @@ public class Cook {
         try {
             System.out.printf("%s пришёл на работу\n", cookName);
 
+
             while (!Thread.interrupted()) {
 
                 Dish dish;
 
-                if (dishQuantity.get() > restaurant.dishesMax) {
+                if (Restaurant.dishesNumber.get() == Restaurant.dishesMax) {
                     System.out.printf("На кухне закончилсь продукты! %s закончил работать!\n", cookName);
                     break;
                 }
 
-                synchronized (restaurant.dishesOrders) {
-                    if (restaurant.dishesOrders.isEmpty()) {
-                        restaurant.dishesOrders.wait();
+                synchronized (Restaurant.dishesOrders) {
+                    if (Restaurant.dishesOrders.isEmpty()) {
+                        Restaurant.dishesOrders.wait();
                     }
-                    dish = restaurant.dishesOrders.poll();
+                    dish = Restaurant.dishesOrders.remove(0);
                 }
 
-                System.out.printf("%s получил от %s заказ-наряд для приготовления блюда для %s\n", cookName, dish.getWaiterName(), dish.getGuestName());
 
                 synchronized (dish) {
-                    dish.setDishName("Блюдо " + dishQuantity.incrementAndGet());
-                    System.out.printf("%s начал готовить %s для %s по заказ-наряду от %s\n", cookName, dish.getDishName(), dish.getGuestName(), dish.getWaiterName());
+                    System.out.printf("%s получил от %s задание на приготовления блюда для %s\n", cookName, dish.getWaiterName(), dish.getGuestName());
+                    dish.setDishName("Блюдо " + Restaurant.dishesNumber.incrementAndGet());
+                    System.out.printf("%s начал готовить %s для %s по заданию от %s\n", cookName, dish.getDishName(), dish.getGuestName(), dish.getWaiterName());
                     Thread.sleep(7000);
-                    System.out.printf("%s приготовил %s для %s по заказ-наряду от %s\n", cookName, dish.getDishName(), dish.getGuestName(), dish.getWaiterName());
+                    System.out.printf("%s приготовил %s для %s по заданию от %s\n", cookName, dish.getDishName(), dish.getGuestName(), dish.getWaiterName());
                     dish.setCookName(cookName);
                     dish.notify();
                 }

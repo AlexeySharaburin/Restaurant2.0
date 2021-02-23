@@ -2,14 +2,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Restaurant {
 
-    static int dishesMax = 3;
+    static int dishesMax = 4;
 
-    static final Queue<Order> waitingList = new LinkedList<>();
+    static  final AtomicInteger dishesNumber = new AtomicInteger(0);
 
-    static final Queue<Dish> dishesOrders = new LinkedList<>();
+    static final List<Order> waitingList = new ArrayList<>();
+    static final List<Dish> dishesOrders = new ArrayList<>();
 
     public void comeNewCook() {
         Cook cook = new Cook(this);

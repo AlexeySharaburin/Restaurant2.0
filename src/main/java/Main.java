@@ -3,8 +3,8 @@ import java.util.List;
 
 public class Main {
 
-    static int client = 3;
-    static int officiants = 2;
+    static int client = 5;
+    static int officiants = 3;
     static int chefs = 2;
 
     public static void main(String[] args) throws InterruptedException {
@@ -20,13 +20,13 @@ public class Main {
         ThreadGroup cooks = new ThreadGroup("Cooks");
 
         System.out.println("Ресторан 'Синхронизация вручную' открыт!");
-        System.out.printf("Количество блюд в меню на сегодня - %d\n", restaurant.dishesMax);
+        System.out.printf("Количество блюд в меню на сегодня - %d\n", Restaurant.dishesMax);
 
         for (int i = 1; i < (chefs + 1); i++) {
             Thread thread = new Thread(cooks, restaurant::comeNewCook, "Повар " + i);
             thread.start();
             threadsListCooks.add(thread);
-            Thread.sleep(1000);
+            Thread.sleep(3000);
         }
 
         for (int i = 1; i < (officiants + 1); i++) {
